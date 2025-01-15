@@ -1,0 +1,45 @@
+\section{Discussion}
+\label{section:disc}
+
+
+% Connect back to the research questions, were they answered?
+%This project aimed to investigate how one surface EMG sensor, applied to the wrist, can be used to classify individual finger movements in real-time. 
+The research questions established for this project were able to be answered with the experimental procedure performed.
+% 1 and 2 research questions
+The first and second research questions concerned the level of accuracy that could be achieved for classification and which processing method resulted in this accuracy.
+The highest level of offline accuracy obtained was 82.6\% with the features shown in Table~\ref{tab:features}, using PCA with five principal components and the KNN classifier. 
+However, due to the project's aim of performing real-time classification, time domain features were instead opted for. Thus the use of the temporal feature extraction multi-set (see the TSFEL documentation~\cite{barandas2020tsfel}) was considered superior to the feature multi-set seen in Table \ref{tab:features}. This is because the temporal feature extraction multi-set has a lower computational cost (a property of the time domain) with a similar classification performance, see Results \ref{section:results}. The low computational cost is important for the implementation of the model on a microcontroller for real-time classification. 
+PCA was used because it increased the generalization of the model. For implementation in real-time, the number of principal components was constrained to two. 
+% Board accuracy
+The use of the temporal feature extraction multi-set, PCA with two principal components, and KNN classifier achieved the best accuracy when running with live data, with an accuracy of 10.1\%. 
+% 3 research question
+%This combination was also found to be the closest to achieving real-time classification on the microcontroller and thus answer the third research question. 
+However, classification in under 300 ms (real-time, see research question 3 in Introduction~\ref{section:research questions}) was not achieved, see Table \ref{tab:classification time}.
+The code should be optimized to enable real-time classification and C should be used instead of python3. Better hardware should also be considered, the BeagleBone Green proved a limiting factor for real-time classification.
+% What do the results mean? discussing the results obtained
+It should be noted that the trained KNN classifier file is substantially larger than all the other classifiers except SVM. This is assumed to be the result of a large model which has overfitted the training data, leading to a poor generalization of the model, which could partially explain the poor performance of the classifier when running with live data. 
+Based on other studies (see Introduction~\ref{section:intro}), using only one sensor could also explain the poor live data performance.
+% Sensor placement
+Only one sensor placement was tested and thus the placement of the sensor on the wrist can not be evaluated. Some performance loss is expected due to the difficulty of placing the sensor on the exact same place on different subjects, during train and then when live data is to be gathered.
+% Feature extraction
+The poor performance when running with live data could also be the result of the limited number of feature extraction techniques employed, indicating (like other studies have found, see Introduction~\ref{section:intro}) that feature extraction is the most important step for the classifier analysis performance.
+
+% Dataset
+The combined dataset is assumed to also impact the accuracy negatively, at least when only one sensor is used. Other studies (see Introduction \ref{section:intro}) use and train on individual datasets for each subject. It is unclear from this project alone what impact the use of a combined dataset had and if it provided any benefits.
+
+
+% Limitations and improvements
+Because of the time limit of this project, only algorithms with available libraries were investigated. An improvement that should be included in future work is to investigate more algorithms. Some promising algorithms (see Introduction \ref{section:intro}) according to other studies, like MAV, were not included in this project.
+% Future work
+Future work should investigate if electroencephalogram (EEG) combined with EMG could improve accuracy and if it could be a promising research area for individual finger movement classification. Additionally, dynamic sensors (inertial measurement units, IMU), like gyroscopes, might also improve accuracy and should be investigated in future work. A review by Khan \textit{et al} states that the integration of EEG and dynamic sensors can improve classification and EMG alone is not able to clearly recognize all types of movements~\cite{khanSelectionFeaturesClassifiers2020}.
+The results of this project can not be directly applied to real-life applications, combined finger movements and no rest periods need to be investigated in future work since this presents the realistic and ideal use case for prostheses and other applications.
+
+
+
+
+
+
+
+
+
+% Here you can discuss your results, limitations, and new questions that have arisen while doing the work. Depending on the size of this report, you can present a discussion and conclusion in one common section or in two separate ones. 

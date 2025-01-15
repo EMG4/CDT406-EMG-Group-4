@@ -1,0 +1,112 @@
+\section{Introduction}
+\label{section:intro}
+
+% Introduction to the area of EMG
+Electromyography (EMG) can be used to detect and monitor the movement of muscles~\cite{emgIntro}. EMG has successfully been applied for various applications including clinical, industrial, and on an individual level~\cite{phinyomarkFeatureReductionSelection2012}. 
+% Motivation
+The identification of finger movements is still seen as complex and thus a majority of the research has focused on wrist and hand movements~\cite{sultanaSystematicReviewSurface2023}\cite{leeElectromyogramBasedClassificationHand2021}\cite{al-timemyClassificationFingerMovements2013}. However, the ability to identify individual finger movements is important for many applications including more dexterous prostheses~\cite{al-timemyClassificationFingerMovements2013}\cite{sultanaSystematicReviewSurface2023}. For prostheses to be available for the majority of the people who need them, it is necessary that they are commercially viable and easy to use~\cite{hristovClassificationIndividualCombined2022}. This creates the necessity for few sensors, high reliability, and low computational cost so the software can be integrated into small systems and the systems must work in real-time~\cite{hristovClassificationIndividualCombined2022}\cite{leeElectromyogramBasedClassificationHand2021}.
+% Aim of the project
+The aim of this project was to investigate the ability to identify individual finger movements of intact limb subjects in real-time using surface EMG with only one sensor.
+
+%\subsection{Bckground}
+\label{section:background}
+
+%\subsection{Related Work}
+\label{section:related_work}  
+
+Botros \textit{et al}~\cite{botrosElectromyographyBasedGestureRecognition2022} investigated how different placements of EMG sensors on the arm can affect the EMG signal performance. The experiments were conducted by placing four electrodes around the upper forearm and four electrodes around the wrist, resulting in a total of eight channels. The experiment consisted of 21 different subjects who performed 17 different hand gestures with a combination of single-finger, multi-finger, and wrist gestures. Wrist-mounted electrodes suffered less from additive noise artifacts and reached an accuracy of 91.2\% for single and multi-finger adjustments and 94.7\% for wrist adjustments which was an improvement compared to the electrodes placed on the upper forearm. However, the classification of the data was only done with Linear Discriminant Analysis (LDA) and Support Vector Machine (SVM) because of their simple implementation. The goal of this project is to further expand upon the research by Botros \textit{et al}. This will be done by performing the classification of finger movements using wrist-mounted EMG sensors in real-time and investigating additional machine learning methods.
+
+Lee \textit{et al} performed finger and hand classification by measuring EMG signals from the forearm using three channels~\cite{leeElectromyogramBasedClassificationHand2021}. The study aimed to design a system that could be used as a real-time system. This puts requirements on the response time of the system to eliminate user-perceived system delay. Because of this requirement, only time-domain features were used during classification and data was sampled individually from each subject for offline training of the machine learning models. The machine learning models they included in their study were: Artificial Neural Network (ANN), SVM, Random Forest (RF), and Logistic Regression (LR). Similarly, each of the machine learning models was individually optimized for the test subjects. They conclude that ANN was the best performing machine learning model which scored a mean offline accuracy of 94\% on all test subjects and had the lowest inter-subject variation. However, accuracy dropped to 61.6\% when classifying in real-time. In their study, Lee \textit{et al} have focused on achieving higher prediction scores with little consideration for how to solve the issue of generalization of the model. This project aims to improve generalization by having a combined data set consisting of data from several test subjects to train a single classifier model for all test subjects, and using only one sensor.
+
+Hristov \textit{et al} acquired EMG signals and trained several machine learning algorithms to classify finger movements in real-time~\cite{hristovClassificationIndividualCombined2022}. Two EMG sensors were placed on the forearm muscles and data was sampled with a rate of 4 kHz. According to Hristov \textit{et al}, classifying a signal in real-time with an acceptable delay is difficult since humans will perceive a system response time larger than 250 milliseconds as delay. Within this time window data acquisition, signal processing, feature extraction, classification, and prosthesis movement needs to be completed. Hristov \textit{et al} therefore used a 250 ms window size and an overlap of 125 ms. The AI models were then trained to only classify using the windows of 125 milliseconds leaving the remaining 125 milliseconds to activate the prosthesis. The implementation of a real-time system was simulated in this research. In contrast to Hristov \textit{et al} study, this project aims to classify in real-time with live data from a test subject to classify finger movements. This project will build on Hristov \textit{et al} results and real-time constraints by using a window size of 250 ms and an overlap of 125 ms.   
+    
+
+%It should be noted that in the two reports, Hristov \textit{et al} didn't try ANN and Lee \textit{et al} didn't try XGBoost \cite{hristovClassificationIndividualCombined2022}\cite{leeElectromyogramBasedClassificationHand2021}. 
+
+
+%\subsection{State-of-the-art}
+\label{section:state-of-the-art}
+The remaining part of the introduction will present additional state of the art which is relevant to this project and other findings from studies that were noteworthy for this project. The introduction then finishes with the research questions and limitations.
+
+
+% Sensor position
+\label{section:electrodes}
+The performance of EMG pattern recognition is dependent on electrode position, electrode shift, limb position, orientation of the limb, and variation in muscle contraction effort~\cite{schemeElectromyogramPatternRecognition2011}\cite{phinyomarkFeatureExtractionSelection2018}. EMG signals are non-stationary with changing characteristics over time, this affects performance \cite{phinyomarkFeatureExtractionSelection2018}. 
+When placing the electrodes, it should be noted that placement on the skin is not perfect and will contribute to contamination of the EMG signals such as motion artifacts at low-frequencies~\cite{botrosElectromyographyBasedGestureRecognition2022}. These artifacts occur when the electrodes have shifted or lost contact with the skin. % Missing source, please add - // It uses the same source as previous sentence, no need to add 
+Including shifted versions of the EMG signals in the training set has been shown to reduce the effects of electrode shift~\cite{schemeElectromyogramPatternRecognition2011}. Including sets in the data that has different limb position and orientation, as well as variation in muscle contraction effort will help reduce performance loss caused by these variations~\cite{schemeElectromyogramPatternRecognition2011}.
+% Dynamic portions can increase classification performance
+According to a study by Lorrain \textit{et al}, including some dynamic portions (transition from rest to target position) and not only the static portion (target position), increases the classification performance \cite{lorrainInfluenceTrainingSet2011}\cite{tsaiComparisonUpperlimbMotion2014}.
+
+% Electrodes/Channels and placement
+A review by Sultana \textit{et al} found that the accuracy increases when more than two electrodes (channels) are used, and decreases when twelve or more are used \cite{sultanaSystematicReviewSurface2023}. Another study by He \textit{et al} also supports the idea that performance increases with an increasing number of channels \cite{heSpatialInformationEnhances2019}. Al-Timemy \textit{et al} finds results that indicate that fewer than 6 channels are unsuitable for finger classification. In their study, they also find results that they interpret as, that the fewer channels there are, extracting more features from each channel will improve and maintain appropriate accuracy \cite{al-timemyClassificationFingerMovements2013}. 
+%The results from He \textit{et al} indicate that when using only two channels, combining them into virtual channels (average and difference) and using those for feature extraction and classification increases the performance \cite{heSpatialInformationEnhances2019}.
+
+
+% A/D D/A converstion
+
+
+% Sampling rate
+A study by Phinyomark \textit{et al} showed that when the sampling rate drops below 1000Hz (which is the common frequency for clinical and research), especially down to 200Hz (which is a common frequency for commercial and wearable EMG devices), the performance of classification of hand and finger movements drop significantly~\cite{phinyomarkFeatureExtractionSelection2018}. Some argue that the performance difference is less significant but still a reduction \cite{millarLSTMNetworkClassification2022}. 
+
+Processing of the sampled EMG signal commonly follows these steps: filtering, segmentation, feature extraction, dimensionality reduction, and classification \cite{tenoreDecodingIndividuatedFinger2009}\cite{kDevelopmentSurfaceEMGBased2018}\cite{englehartClassificationMyoelectricSignal1999}\cite{phinyomarkEMGFeatureEvaluation2013}. The following will describe these steps in more detail and the state of the art of the options and choices related to these steps.
+
+% Pre-processing
+EMG signals contain a number of noise sources including: noise in electronic equipment, ambient noise, motion artifacts, instability of signal (EMG has random elements), Electrocardiogram (ECG) artifacts, and cross-talk~\cite{nazmiReviewClassificationTechniques2016}. Pre-processing is therefore required.
+% Filter
+To filter the signals it is common to use a bandpass filter of 10-20 Hz to 450-500 Hz~\cite{botrosElectromyographyBasedGestureRecognition2022}\cite{phinyomarkApplicationWaveletAnalysis2011}\cite{samuelPatternRecognitionElectromyography2018} for reducing motion artifacts~\cite{nazmiReviewClassificationTechniques2016}. This is commonly done with a Butterworth filter~\cite{phinyomarkFeatureReductionSelection2012}\cite{nazmiReviewClassificationTechniques2016}\cite{tenoreDecodingIndividuatedFinger2009}\cite{al-timemyClassificationFingerMovements2013}\cite{leeElectromyogramBasedClassificationHand2021}. Filtering of power line interference is also common, a 50 Hz notch filter is usually applied for this~\cite{schemeElectromyogramPatternRecognition2011}\cite{samuelPatternRecognitionElectromyography2018}\cite{hristovClassificationIndividualCombined2022}\cite{millarLSTMNetworkClassification2022}. 
+%Adaptive filtering is mentioned in a review by Nazmi \textit{et al} for reducing ECG artifacts \cite{nazmiReviewClassificationTechniques2016}. It is stated that proper mentioning in literature is lacking for the filtering stage \cite{nazmiReviewClassificationTechniques2016}.
+
+% Segmentation
+\label{segmentation}
+The raw EMG signal is initially divided into segments~\cite{nazmiReviewClassificationTechniques2016}. Performance of the classification increases with larger segments~\cite{phinyomarkEMGFeatureEvaluation2013}. To be viable for real-time applications, the segments (window length) need to be less than 300 milliseconds, otherwise the user will experience delay~\cite{phinyomarkEMGFeatureEvaluation2013}\cite{phinyomarkApplicationWaveletAnalysis2011}\cite{hristovClassificationIndividualCombined2022}. For segmentation there are two types of windowing techniques, adjacent and overlapping~\cite{nazmiReviewClassificationTechniques2016}. With adjacent windowing, feature extraction, dimensionality reduction, and classification are performed for each segment after some processing delay~\cite{nazmiReviewClassificationTechniques2016}. In overlapping windowing, a new segment is being moved over the current segment as it is being processed~\cite{nazmiReviewClassificationTechniques2016}.
+Overlapping is the preferred segmentation technique because the delay is more consistent~\cite{khanSelectionFeaturesClassifiers2020}.
+
+% EMG
+According to a study by Englehart \textit{et al}, feature extraction is more impactful for the classifier analysis performance than the classification method chosen~\cite{englehartClassificationMyoelectricSignal1999}\cite{schemeElectromyogramPatternRecognition2011}, this is supported by Phinyomark \textit{et al}~\cite{phinyomarkFeatureExtractionSelection2018} and Samuel \textit{et al}~\cite{samuelPatternRecognitionElectromyography2018}.
+% Feature extraction
+Feature extraction can be separated into three groups: time, frequency, and time-frequency domain~\cite{phinyomarkFeatureReductionSelection2012}\cite{nazmiReviewClassificationTechniques2016}\cite{khanSelectionFeaturesClassifiers2020}\cite{millarLSTMNetworkClassification2022}. Time domain assumes stationary signals, EMG signals are non-stationary, which is the main disadvantage of time domain \cite{phinyomarkFeatureReductionSelection2012}. Time domain is also sensitive to interference but will however perform well in low noise situations~\cite{phinyomarkFeatureReductionSelection2012}. According to a study by Phinyomark \textit{et al} time domain is prone to redundant information~\cite{phinyomarkFeatureReductionSelection2012}. Phinyomark \textit{et al} further states that the time domain is preferred over the frequency domain because of its lower complexity and not needing to use any transformation. Additionally, the time domain is easy to implement, fast, has low computational load~\cite{sultanaSystematicReviewSurface2023} and good performance~\cite{millarLSTMNetworkClassification2022}.  
+The frequency domain is unsuited for EMG classification because it gives poor class separability~\cite{phinyomarkFeatureReductionSelection2012}\cite{khanSelectionFeaturesClassifiers2020}. The time-frequency domain is not commonly used for EMG finger movement identification~\cite{sultanaSystematicReviewSurface2023}.
+% Most common domain
+Time domain is the most common group to use when classifying hand and finger gestures, with mean absolute value (MAV) being the most common feature extraction method~\cite{sultanaSystematicReviewSurface2023}. 
+% Feature selection
+A study by Phinyomark \textit{et al} recommends using MAV, Waveform length (WL), or Willison/Wilson amplitude (WAMP) as the feature extraction method~\cite{phinyomarkFeatureReductionSelection2012}. Tenore \textit{et al} suggests that the WL method for feature extraction yields higher accuracy than other time domain methods~\cite{tenoreDecodingIndividuatedFinger2009}. Phinyomark \textit{et al} suggests using a feature multi-set consisting of L-scale (LS), maximum fractal length (MFL), mean value of the square root (MSR), WAMP, zero crossing (ZC), root mean square (RMS), integrated absolute value (IAV), difference absolute standard deviation value (DASDV), and variance (VAR) for low sampling rate applications~\cite{phinyomarkFeatureExtractionSelection2018}. According to another study by Phinyomark \textit{et al}, sample entropy (SampEn) or a feature multi-set with SampEn + Cepstral coefficients (CC) + RMS + WL is the best performing and the most robust time domain feature extraction method for long-term (21 days) usage applications~\cite{phinyomarkEMGFeatureEvaluation2013}.
+%According to a study by Al-timemy \textit{et al}, the fewer channels there are, the more features should be extracted from each channel to maintain appropriate accuracy \cite{al-timemyClassificationFingerMovements2013}.
+A time domain autoregressive (TD-AR) feature set has in studies shown to outperform other time domain methods \cite{al-timemyClassificationFingerMovements2013}\cite{schemeElectromyogramPatternRecognition2011}.
+
+% Dimensionality reduction
+Dimensionality reduction is important since a lower dimension provides better generalization for the model~\cite{englehartClassificationMyoelectricSignal1999}. Dimensionality reduction is mainly needed when the time-frequency domain is used or feature multi-sets because of the resulting high dimensionality \cite{phinyomarkEMGFeatureEvaluation2013}. But dimensionality reduction has been found to provide a small increase in accuracy for the time and frequency domain as well~\cite{phinyomarkEMGFeatureEvaluation2013}. 
+In a study by Al-Timemy \textit{et al}, they find results that indicate that orthogonal fuzzy neighborhood discriminant analysis (OFNDA) is a good dimensionality reduction method for finger movement classification~\cite{al-timemyClassificationFingerMovements2013}.
+
+% Classification
+A frequently used classifier is LDA, which is a pattern classification algorithm that is robust, has a simple statistical approach \cite{lorrainInfluenceTrainingSet2011}, does not require parameter adjustment, is computationally efficient for real-time \cite{khanSelectionFeaturesClassifiers2020} and the classification performance is similar to more complex algorithms~\cite{phinyomarkEMGFeatureEvaluation2013}\cite{phinyomarkFeatureReductionSelection2012}\cite{schemeElectromyogramPatternRecognition2011}. ANN is another common classifier which in a review by Sultana \textit{et al} was found to have the highest average accuracy when predicting hand and finger gestures~\cite{sultanaSystematicReviewSurface2023}. ANN performance has shown to be less affected by inter-patient variability~\cite{leeElectromyogramBasedClassificationHand2021}. Furthermore, a number of recent studies have found that XGBoost performs best for finger movement identification~\cite{hristovClassificationIndividualCombined2022}\cite{kumarMachineLearningBasedFramework2022}.
+
+%\subsection{Problem formulation} 
+% Problem formulation is redundant because of the Aim of the work?
+
+% Hypothesis
+% || Hypothesis need not be stated ||
+
+% Research questions
+\label{section:research questions}
+In order to accomplish the goal of the project, the following research questions were established:
+\begin{enumerate}
+    \item What level of accuracy can be achieved in identifying individual finger movements using only one sensor?
+    \item Which combination of feature extraction, dimensionality reduction, and classifier (out of the ones investigated in this report) yields the highest level of accuracy?
+    \item Can the classification be done in real-time on a microcontroller?
+\end{enumerate}
+In this project, real-time is considered anything below 300 ms (see segmentation in Introduction~\ref{segmentation}).
+This project was limited to eight weeks, thus only opening and closing motions for individual fingers were investigated, not combined motions. Also because of the time limit, algorithms for pre-processing, feature extraction, dimension reduction, and AI classifiers were only implemented through the use of available libraries. Thus only algorithms with available libraries were considered for this project.
+
+
+% Relevance
+% Already covered in motivation?
+
+
+
+% Al-Timemy \textit{et al.} states that "Only three thumb movements were included in the classification (flexion, extension, and abduction) since the muscles responsible for thumb adduction lie in the hand itself [10] and it cannot be decoded from the upper forearm." \cite{al-timemyClassificationFingerMovements2013}.
+
+% PDF 
+% In a review by Nazmi \textit{et al.} it is presented the controversy regarding which probability density function the EMG signal is to be assumed to belong to \cite{nazmiReviewClassificationTechniques2016}. The only conclusive result presented is that logistics has the minimum mean absolute error when compared to experimental data \cite{nazmiReviewClassificationTechniques2016}. The review also states the following "Based on reviews, the potential of PDF in describing EMG signals for isometric contractions are for a Gaussian distribution at higher level contractions and a Laplace distribution at low-level contractions" \cite{nazmiReviewClassificationTechniques2016}.
+
+
+% Generally, this section provides an introduction and literature overview, the aim of the work, and research questions.

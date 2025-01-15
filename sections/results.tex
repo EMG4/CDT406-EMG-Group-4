@@ -1,0 +1,201 @@
+\section{Results}
+\label{section:results}
+The following section presents the results of the performed classifiers for individual finger movements. The presented results show the feature set which resulted in the highest classification accuracy, if dimensionality reduction improved results, and which classifiers yielded the highest prediction accuracy.
+
+The feature extraction multi-set that resulted in the highest offline accuracy of 82.6\% can be seen in Table \ref{tab:features}. This feature set was found through a limited grid like search with a bash script.
+The temporal feature extraction multi-set (see the TSFEL documentation~\cite{barandas2020tsfel}) achieved a classification performance of 82.5\%
+
+\begin{table}[ht]
+    \centering
+    %\resizebox{\columnwidth}{!}{
+    \begin{tabular}{c}
+         \hline
+         Feature \\
+         \hline
+         FFT mean coefficient \\
+         Spectral distance \\
+         Spectral spread \\
+         Wavelet standard deviation \\
+         Wavelet variance \\
+         Empirical distribution function (ECDF) \\
+         Max \\
+         Mean \\
+         Median \\
+         Root mean square (RMS) \\
+         Absolute energy \\
+         Area under the curve \\
+         Auto correlation \\
+         Centroid \\
+         Entropy \\
+         Mean absolute difference \\
+         Mean difference \\
+         Median absolute difference \\
+         Median difference \\
+         Negative turning points \\
+         Neighborhood peaks \\
+         Peak to peak distance \\
+         Positive turning points \\
+         Signal distance \\
+         Slope \\
+         Sum absolute distance \\
+         Total energy \\
+         Zero crossing rate (ZC)
+    \end{tabular}
+    \caption{Feature extraction multi-set with the highest offline accuracy.}
+    \label{tab:features}
+\end{table}
+
+The use of PCA for dimensionality reduction did not provide a consistent increase in classification performance but did maintain performance while reducing the information. Using five principal components resulted in the best performance when PCA was used.
+
+KNN and XGBoost were the best performing classifiers offline. See Table~\ref{tab:offline classifier} for the offline results for all classifiers.
+KNN was also the best performing classifier when running with live data, see Table \ref{tab:real-time classifier}. The accuracy in Table \ref{tab:real-time classifier} was calculated on a PC because of heavy delay when running the classifiers on the BeagleBone Green microcontroller, see Table \ref{tab:classification time} for average classification times on the microcontroller. Do note that all classifiers in Table \ref{tab:real-time classifier} which are not listed as N/A could run on the microcontroller. 
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{c|c}
+         \hline
+         Classifier & Accuracy (\%) \\
+         \hline
+         ANN with GA & 25.6 \\
+         KNN & 82.6 \\
+         LDA & 11.8 \\
+         MLP & 12.4 \\
+         SVM & 11.8 \\
+         XGBoost & 35.7
+    \end{tabular}
+    \caption{Offline classifier accuracy for the entire data set.}
+    \label{tab:offline classifier}
+\end{table}
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{c|c}
+         \hline
+         Classifier & Accuracy (\%) \\
+         \hline
+         ANN with GA & N/A \\
+         KNN & 10.1 \\ % 10.1 on PC, N/A BBG
+         LDA & 6.4 \\ %6.5 on PC, 6.4 on BBG
+         MLP & 7.1 \\ %5 on PC, 7.1 on BBG
+         SVM & 8.6 \\ %8.6 on PC, N/A BBG
+         XGBoost & N/A %7.87 on PC, N/A BBG
+    \end{tabular}
+    \caption{Classifier performance results when running classification on a PC with live data.}
+    \label{tab:real-time classifier}
+\end{table}
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{c|c}
+         \hline
+         Classifier & Time(s) \\
+         \hline
+         ANN with GA & N/A \\
+         KNN & 608 \\ 
+         LDA & 1 \\ 
+         MLP & 1 \\ 
+         SVM & 600 \\
+         XGBoost & N/A 
+    \end{tabular}
+    \caption{Average classification time when running with live data on the BeagleBone Green microcontroller.}
+    \label{tab:classification time}
+\end{table}
+The confusion matrices for KNN and XGBoost, which were the best performing classifiers, can be seen in Table~\ref{tab:knn_confusion_matrix} and Table~\ref{tab:xgb_confusion_matrix}. 
+% ------------------------------------------------------------------------------------------------------------------------------------------------
+% Definitions etc for the confusion matrices
+\def\colorModel{hsb} %You can use rgb or hsb
+
+\newcommand\ColCell[1]{
+  \pgfmathparse{#1<500?1:0}  %Threshold for changing the font color into the cells
+    \ifnum\pgfmathresult=0\relax\color{white}\fi
+  \pgfmathsetmacro\compA{0}      %Component R or H
+  \pgfmathsetmacro\compB{#1/1000} %Component G or S
+  \pgfmathsetmacro\compC{1}      %Component B or B
+  \edef\x{\noexpand\centering\noexpand\cellcolor[\colorModel]{\compA,\compB,\compC}}\x #1
+  } 
+\newcolumntype{E}{>{\collectcell\ColCell}m{0.5cm}<{\endcollectcell}}  %Cell width
+\newcommand*\rot{\rotatebox{90}}
+% ------------------------------------------------------------------------------------------------------------------------------------------------
+\begin{table}[ht]
+    \centering
+    \newcommand\items{11}   %Number of classes
+    \arrayrulecolor{white} %Table line colors
+    \resizebox{\columnwidth}{!}{\noindent\begin{tabular}{cc*{\items}{|E}|}
+    \multicolumn{1}{c}{} &\multicolumn{1}{c}{} &\multicolumn{\items}{c}{Predicted class} \\ \hhline{~*\items{|-}|}
+    \multicolumn{1}{c}{} & 
+    \multicolumn{1}{c}{} & 
+    \multicolumn{1}{c}{\rot{Class 0}} & 
+    \multicolumn{1}{c}{\rot{Class 1}} &
+    \multicolumn{1}{c}{\rot{Class 2}} &
+    \multicolumn{1}{c}{\rot{Class 3}} &
+    \multicolumn{1}{c}{\rot{Class 4}} &
+    \multicolumn{1}{c}{\rot{Class 5}} &
+    \multicolumn{1}{c}{\rot{Class 6}} &
+    \multicolumn{1}{c}{\rot{Class 7}} &
+    \multicolumn{1}{c}{\rot{Class 8}} &
+    \multicolumn{1}{c}{\rot{Class 9}} &
+    \multicolumn{1}{c}{\rot{Class 10}} \\ \hhline{~*\items{|-}|}
+    \multirow{\items}{*}{\rotatebox{90}{Actual class}} 
+    &Class 0  & 8788 & 158 & 173 & 187 & 153 & 131 & 139 & 142 & 132 & 134 & 125   \\ \hhline{~*\items{|-}|}
+    &Class 1  & 158 & 2594 &  57 &  55 &  61 &  60 &  41 &  42 &  37 &  35 &  37   \\ \hhline{~*\items{|-}|}
+    &Class 2  & 183 &  58 & 2647 &  66 &  48 &  54 &  52 &  38 &  53 &  45 &  33   \\ \hhline{~*\items{|-}|}
+    &Class 3  & 164 &  67 &  48 & 2714 &  55 &  56 &  50 &  35 &  28 &  48 &  49   \\ \hhline{~*\items{|-}|}
+    &Class 4  & 144 &  56 &  42 &  57 & 2553 &  45 &  51 &  40 &  46 &  32 &  42   \\ \hhline{~*\items{|-}|}
+    &Class 5  & 153 &  51 &  55 &  43 &  65 & 2555 &  38 &  41 &  35 &  41 &  36   \\ \hhline{~*\items{|-}|}
+    &Class 6  & 158 &  40 &  47 &  49 &  30 &  35 & 2239 &  43 &  46 &  33 &  37   \\ \hhline{~*\items{|-}|}
+    &Class 7  & 139 &  54 &  45 &  44 &  44 &  37 &  41 & 2268 &  42 &  40 &  48   \\ \hhline{~*\items{|-}|}
+    &Class 8  & 138 &  50 &  46 &  48 &  42 &  41 &  41 &  39 & 2263 &  26 &  28   \\ \hhline{~*\items{|-}|}
+    &Class 9  & 153 &  49 &  42 &  43 &  49 &  48 &  41 &  46 &  43 & 2180 &  39   \\ \hhline{~*\items{|-}|}
+    &Class 10 & 136 &  40 &  46 &  44 &  43 &  51 &  31 &  37 &  34 &  39 & 2210   \\ \hhline{~*\items{|-}|}
+    \end{tabular}}
+    \caption{Confusion matrix for the KNN classifier, see Table~\ref{tab:finger_movements} for identification of classes.}
+    \label{tab:knn_confusion_matrix}
+\end{table}
+
+
+
+
+
+\begin{table}[ht]
+    \centering
+    \newcommand\items{11}   %Number of classes
+    \arrayrulecolor{white} %Table line colors
+    \resizebox{\columnwidth}{!}{\noindent\begin{tabular}{cc*{\items}{|E}|}
+    \multicolumn{1}{c}{} &\multicolumn{1}{c}{} &\multicolumn{\items}{c}{Predicted class} \\ \hhline{~*\items{|-}|}
+    \multicolumn{1}{c}{} & 
+    \multicolumn{1}{c}{} & 
+    \multicolumn{1}{c}{\rot{Class 0}} & 
+    \multicolumn{1}{c}{\rot{Class 1}} &
+    \multicolumn{1}{c}{\rot{Class 2}} &
+    \multicolumn{1}{c}{\rot{Class 3}} &
+    \multicolumn{1}{c}{\rot{Class 4}} &
+    \multicolumn{1}{c}{\rot{Class 5}} &
+    \multicolumn{1}{c}{\rot{Class 6}} &
+    \multicolumn{1}{c}{\rot{Class 7}} &
+    \multicolumn{1}{c}{\rot{Class 8}} &
+    \multicolumn{1}{c}{\rot{Class 9}} &
+    \multicolumn{1}{c}{\rot{Class 10}} \\ \hhline{~*\items{|-}|}
+    \multirow{\items}{*}{\rotatebox{90}{Actual class}} 
+    &Class 0  & 2497 & 1016 & 676 & 748 & 742 & 689 & 774 & 779 & 714 & 667 & 960   \\ \hhline{~*\items{|-}|}
+    &Class 1  & 222 & 1350 & 184 & 195 & 147 & 164 & 196 & 184 & 148 & 158 & 229    \\ \hhline{~*\items{|-}|}
+    &Class 2  & 231 & 285 & 1163 & 204 & 192 & 182 & 190 & 224 & 174 & 172 & 260    \\ \hhline{~*\items{|-}|}
+    &Class 3  & 217 & 246 & 223 & 1258 & 189 & 164 & 202 & 203 & 179 & 175 & 258    \\ \hhline{~*\items{|-}|}
+    &Class 4  & 208 & 267 & 172 & 197 & 1155 & 172 & 177 & 197 & 177 & 153 & 233    \\ \hhline{~*\items{|-}|}
+    &Class 5  & 209 & 249 & 164 & 185 & 141 & 1191 & 170 & 175 & 189 & 204 & 236    \\ \hhline{~*\items{|-}|}
+    &Class 6  & 182 & 209 & 149 & 150 & 138 & 130 & 1175 & 152 & 143 & 138 & 191    \\ \hhline{~*\items{|-}|}
+    &Class 7  & 175 & 236 & 154 & 132 & 157 & 166 & 168 & 1077 & 143 & 166 & 228    \\ \hhline{~*\items{|-}|}
+    &Class 8  & 167 & 228 & 147 & 143 & 139 & 141 & 155 & 159 & 1091 & 159 & 233    \\ \hhline{~*\items{|-}|}
+    &Class 9  & 187 & 224 & 154 & 166 & 136 & 143 & 131 & 168 & 141 & 1083 & 200    \\ \hhline{~*\items{|-}|}
+    &Class 10 & 131 & 198 & 129 & 155 & 134 & 126 & 152 & 138 & 139 & 152 & 1257    \\ \hhline{~*\items{|-}|}
+    \end{tabular}}
+    \caption{Confusion matrix for the XGBoost classifier, see Table~\ref{tab:finger_movements} for identification of classes.}
+    \label{tab:xgb_confusion_matrix}
+\end{table}
+
+
+
+
+
+
+
+
+% This section should present answers to all research questions.
+
+% It is normal to have only one results section, but you can create more sections if finding it more appropriate. You can also divide results into subsections. Perhaps you want to refer to some other section, for example (see Section \ref{section:method}). You can also place figures, you should always reference these in the text, see Figure \ref{fig:MDHlogga} for an example of a figure including subfigures. Remember that all figures should have a figure label explaining their content.
